@@ -78,7 +78,7 @@ extern int yyparse();
 FILE *yyin;
 void yyerror(const char* s);
 
-#line 82 "y.tab.c"
+#line 82 "compute.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -123,23 +123,23 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    add = 258,
-    sub = 259,
-    mul = 260,
+    ADD = 258,
+    MINUS = 259,
+    MUL = 260,
     DIV = 261,
-    l_bracket = 262,
-    r_barcket = 263,
+    LP = 262,
+    RP = 263,
     NUMBER = 264,
     UMINUS = 265
   };
 #endif
 /* Tokens.  */
-#define add 258
-#define sub 259
-#define mul 260
+#define ADD 258
+#define MINUS 259
+#define MUL 260
 #define DIV 261
-#define l_bracket 262
-#define r_barcket 263
+#define LP 262
+#define RP 263
 #define NUMBER 264
 #define UMINUS 265
 
@@ -518,8 +518,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    26,    26,    27,    28,    31,    32,    33,    34,    35,
-      36,    37
+       0,    23,    23,    24,    25,    28,    29,    30,    31,    32,
+      33,    34
 };
 #endif
 
@@ -528,8 +528,8 @@ static const yytype_int8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "add", "sub", "mul", "DIV", "l_bracket",
-  "r_barcket", "NUMBER", "UMINUS", "';'", "$accept", "lines", "expr", YY_NULLPTR
+  "$end", "error", "$undefined", "ADD", "MINUS", "MUL", "DIV", "LP", "RP",
+  "NUMBER", "UMINUS", "';'", "$accept", "lines", "expr", YY_NULLPTR
 };
 #endif
 
@@ -1316,55 +1316,55 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 26 "compute.y"
+#line 23 "compute.y"
                                        {printf("%f\n", yyvsp[-1]);}
-#line 1322 "y.tab.c"
+#line 1322 "compute.tab.c"
     break;
 
   case 5:
-#line 31 "compute.y"
+#line 28 "compute.y"
                                       {yyval = yyvsp[-2] + yyvsp[0];}
-#line 1328 "y.tab.c"
+#line 1328 "compute.tab.c"
     break;
 
   case 6:
-#line 32 "compute.y"
-                                      {yyval = yyvsp[-2] - yyvsp[0];}
-#line 1334 "y.tab.c"
+#line 29 "compute.y"
+                                        {yyval = yyvsp[-2] - yyvsp[0];}
+#line 1334 "compute.tab.c"
     break;
 
   case 7:
-#line 33 "compute.y"
+#line 30 "compute.y"
                                       {yyval = yyvsp[-2] * yyvsp[0];}
-#line 1340 "y.tab.c"
+#line 1340 "compute.tab.c"
     break;
 
   case 8:
-#line 34 "compute.y"
+#line 31 "compute.y"
                                       {yyval = yyvsp[-2] / yyvsp[0];}
-#line 1346 "y.tab.c"
+#line 1346 "compute.tab.c"
     break;
 
   case 9:
-#line 35 "compute.y"
-                                              {yyval = yyvsp[-1];}
-#line 1352 "y.tab.c"
+#line 32 "compute.y"
+                                {yyval = yyvsp[-1];}
+#line 1352 "compute.tab.c"
     break;
 
   case 10:
-#line 36 "compute.y"
-                                              {yyval = -yyvsp[0];}
-#line 1358 "y.tab.c"
+#line 33 "compute.y"
+                                                {yyval = -yyvsp[0];}
+#line 1358 "compute.tab.c"
     break;
 
   case 11:
-#line 37 "compute.y"
+#line 34 "compute.y"
                                {yyval = yyvsp[0];}
-#line 1364 "y.tab.c"
+#line 1364 "compute.tab.c"
     break;
 
 
-#line 1368 "y.tab.c"
+#line 1368 "compute.tab.c"
 
       default: break;
     }
@@ -1596,7 +1596,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 54 "compute.y"
+#line 37 "compute.y"
 
 
 int yylex()
@@ -1610,30 +1610,38 @@ int yylex()
 		else if(isdigit(t))
 		{
 			yylval = 0;
-			while(isdigit(t)){
+			// 谨防2+3 2等不小心输错情况跳出循环
+			while(isdigit(t)||t == ' ' || t == '\t' || t == '\n'){
+
+				if(isdigit(t)){
 				yylval = yylval * 10 + t - '0';
+				}
 				t = getchar();
 			}
+			
 			ungetc(t, stdin);
+			// 如果不是数字空格换行制表符 将字符返回到输入流继续处理
 			return NUMBER;
+			// 返回单词序列
+			
 		}
 		else if(t == '+'){
-			return add;
+			return ADD;
 		}
 		else if(t == '-'){
-			return sub;
+			return MINUS;
 		}
 		else if(t == '*'){
-			return mul;
+			return MUL;
 		}
 		else if(t == '/'){
 			return DIV;
 		}
 		else if(t == '('){
-			return l_bracket;
+			return LP;
 		}
 		else if(t == ')'){
-			return r_barcket;
+			return RP;
 		}
 		else{
 			return t;

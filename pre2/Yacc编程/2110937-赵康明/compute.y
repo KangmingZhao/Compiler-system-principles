@@ -47,12 +47,20 @@ int yylex()
 		else if(isdigit(t))
 		{
 			yylval = 0;
-			while(isdigit(t)){
+			// 谨防2+3 2等不小心输错情况跳出循环
+			while(isdigit(t)||t == ' ' || t == '\t' || t == '\n'){
+
+				if(isdigit(t)){
 				yylval = yylval * 10 + t - '0';
+				}
 				t = getchar();
 			}
+			
 			ungetc(t, stdin);
+			// 如果不是数字空格换行制表符 将字符返回到输入流继续处理
 			return NUMBER;
+			// 返回单词序列
+			
 		}
 		else if(t == '+'){
 			return ADD;
