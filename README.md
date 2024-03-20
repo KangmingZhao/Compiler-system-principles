@@ -1,6 +1,6 @@
 ### Introduction
 
-- NKU 23Fall Compiler-system-principles
+-  23Fall Compiler-system-principles
 - Group member:Zhao kangming,Fu tong
 
 ### Preparation1:What does the compiler do 
